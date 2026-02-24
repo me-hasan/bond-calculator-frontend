@@ -52,7 +52,7 @@ export function ResultCard({ result, isLoading, error }: ResultCardProps) {
         <div className="result-item">
           <label>Current Yield</label>
           <div className="result-value">
-            {((result.cashflows[0]?.interest || 0) / result.marketPrice * 100).toFixed(2)}%
+            {((result.cashflows[0]?.interest || 0) / result.currentBondPrice * 100).toFixed(2)}%
           </div>
         </div>
 
@@ -67,6 +67,13 @@ export function ResultCard({ result, isLoading, error }: ResultCardProps) {
           <label>Total Interest</label>
           <div className="result-value">
             ${result.cashflows.reduce((sum, cf) => sum + cf.interest, 0).toFixed(2)}
+          </div>
+        </div>
+
+        <div className="result-item">
+          <label>Bond Price</label>
+          <div className="result-value">
+            ${result.currentBondPrice.toFixed(2)}
           </div>
         </div>
 
