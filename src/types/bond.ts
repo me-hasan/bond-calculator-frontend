@@ -8,22 +8,19 @@ export interface BondCalculationRequest {
   frequency?: number // Payment frequency per year (default: 2 for semi-annual)
 }
 
+export type CashflowType = 'coupon' | 'principal'
+
 export interface CashflowRow {
   period: number
-  payment: number
-  principal: number
-  interest: number
-  balance: number
+  type: CashflowType
+  amount: number
+  presentValue: number
 }
 
 export interface BondCalculationResponse {
   status: BondStatus
+  currentYield: number
   yieldToMaturity: number
-  presentValue: number
-  macaulayDuration: number
-  modifiedDuration: number
+  totalInterest: number
   cashflows: CashflowRow[]
-  currentBondPrice: number
-  accruedInterest: number
-  dirtyPrice: number
 }
