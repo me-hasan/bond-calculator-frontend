@@ -2,14 +2,16 @@ import { useState } from 'react'
 import { BondForm } from './components/BondForm'
 import { ResultCard } from './components/ResultCard'
 import { CashflowTable } from './components/CashflowTable'
-import { bondApi, ApiError, NetworkError } from './services/bondApi'
+import { ErrorBoundary } from './components/ErrorBoundary'
+import { bondService, ApiError, NetworkError, ValidationError } from './api'
 import type { BondCalculationRequest, BondCalculationResponse } from './types/bond'
 import './components/BondForm.css'
 import './components/ResultCard.css'
 import './components/CashflowTable.css'
+import './components/ErrorBoundary.css'
 import './App.css'
 
-function App() {
+function AppContent() {
   const [result, setResult] = useState<BondCalculationResponse | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -20,11 +22,21 @@ function App() {
     setResult(null)
 
     try {
-      const response = await bondApi.calculateBond(data)
-      setResult(response)
+      const response = await bondService.calculateBond(data)
+      setResult(response as BondCalculationResponse)
     } catch (err) {
-      if (err instanceof ApiError) {
-        setError(`Server Error (${err.statusCode}): ${err.message}`)
+      if (err instanceof ValidationError) {
+        setError(`Validation Error: ${err.message}`)
+      } else if (err instanceof ApiError) {
+        const errorMsg = `Server Error (${err.statusCode}): ${err.message}`
+        setError(errorMsg)
+        // Log additional details for debugging
+        if (err.details) {
+          console.error('Server error details:', err.details)
+        }
+        // Log the full request that was sent
+        console.error('Request data:', data)
+        console.error('Request URL:', `${import.meta.env.VITE_API_BASE_URL}/bond/calculate`)
       } else if (err instanceof NetworkError) {
         setError(`Network Error: ${err.message}`)
       } else {
@@ -76,6 +88,14 @@ function App() {
         <p>Bond Calculator &copy; {new Date().getFullYear()}</p>
       </footer>
     </div>
+  )
+}
+
+function App() {
+  return (
+    <ErrorBoundary>
+      <AppContent />
+    </ErrorBoundary>
   )
 }
 
