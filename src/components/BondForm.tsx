@@ -30,6 +30,8 @@ export function BondForm({ onSubmit, isLoading = false }: BondFormProps) {
     }
     if (!formData.couponRate || formData.couponRate <= 0) {
       newErrors.couponRate = 'Coupon rate must be greater than 0'
+    } else if (formData.couponRate > 100) {
+      newErrors.couponRate = 'Coupon rate must not exceed 100'
     }
     if (!formData.marketPrice || formData.marketPrice <= 0) {
       newErrors.marketPrice = 'Market price must be greater than 0'
@@ -40,6 +42,17 @@ export function BondForm({ onSubmit, isLoading = false }: BondFormProps) {
 
     setErrors(newErrors)
     return Object.keys(newErrors).length === 0
+  }
+
+  const isFormValid = (): boolean => {
+    return (
+      formData.faceValue > 0 &&
+      formData.couponRate > 0 &&
+      formData.couponRate <= 100 &&
+      formData.marketPrice > 0 &&
+      formData.yearsToMaturity > 0 &&
+      Object.keys(errors).length === 0
+    )
   }
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -136,7 +149,7 @@ export function BondForm({ onSubmit, isLoading = false }: BondFormProps) {
         </select>
       </div>
 
-      <button type="submit" disabled={isLoading} className="submit-button">
+      <button type="submit" disabled={isLoading || !isFormValid()} className="submit-button">
         {isLoading ? 'Calculating...' : 'Calculate'}
       </button>
     </form>
