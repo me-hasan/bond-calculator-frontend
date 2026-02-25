@@ -31,21 +31,21 @@ export function BondForm({ onSubmit, isLoading = false }: BondFormProps) {
   const [focusedField, setFocusedField] = useState<keyof BondCalculationRequest | null>(null)
   const [errors, setErrors] = useState<Partial<Record<keyof BondCalculationRequest, string>>>({})
 
-  const validateForm = (): boolean => {
+  const validateForm = (currentData: BondCalculationRequest): boolean => {
     const newErrors: Partial<Record<keyof BondCalculationRequest, string>> = {}
 
-    if (!formData.faceValue || formData.faceValue <= 0) {
+    if (!currentData.faceValue || currentData.faceValue <= 0) {
       newErrors.faceValue = 'Face value must be greater than 0'
     }
-    if (!formData.couponRate || formData.couponRate <= 0) {
+    if (!currentData.couponRate || currentData.couponRate <= 0) {
       newErrors.couponRate = 'Coupon rate must be greater than 0'
-    } else if (formData.couponRate > 100) {
+    } else if (currentData.couponRate > 100) {
       newErrors.couponRate = 'Coupon rate must not exceed 100'
     }
-    if (!formData.marketPrice || formData.marketPrice <= 0) {
+    if (!currentData.marketPrice || currentData.marketPrice <= 0) {
       newErrors.marketPrice = 'Market price must be greater than 0'
     }
-    if (!formData.yearsToMaturity || formData.yearsToMaturity <= 0) {
+    if (!currentData.yearsToMaturity || currentData.yearsToMaturity <= 0) {
       newErrors.yearsToMaturity = 'Years to maturity must be greater than 0'
     }
 
@@ -53,29 +53,21 @@ export function BondForm({ onSubmit, isLoading = false }: BondFormProps) {
     return Object.keys(newErrors).length === 0
   }
 
-  const isFormValid = (): boolean => {
-    return (
-      formData.faceValue > 0 &&
-      formData.couponRate > 0 &&
-      formData.couponRate <= 100 &&
-      formData.marketPrice > 0 &&
-      formData.yearsToMaturity > 0 &&
-      Object.keys(errors).length === 0
-    )
-  }
-
-  const handleSubmit = (e: React.SyntheticEvent) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    if (validateForm()) {
+    if (validateForm(formData)) {
       onSubmit(formData)
     }
   }
 
   const handleChange = (field: keyof BondCalculationRequest, value: number) => {
     setFormData((prev) => ({ ...prev, [field]: value }))
-    if (errors[field]) {
-      setErrors((prev) => ({ ...prev, [field]: undefined }))
-    }
+    // Clear error for this field when value changes
+    setErrors((prev) => {
+      const newErrors = { ...prev }
+      delete newErrors[field]
+      return newErrors
+    })
   }
 
   const toggleSliderMode = (field: keyof BondCalculationRequest) => {
@@ -107,10 +99,12 @@ export function BondForm({ onSubmit, isLoading = false }: BondFormProps) {
           id={id}
           type="number"
           step="0.01"
-          min="0"
           placeholder={`Enter ${label.toLowerCase()}`}
-          value={formData[field] || ''}
-          onChange={(e) => handleChange(field, parseFloat(e.target.value) || 0)}
+          value={formData[field] === 0 ? '' : formData[field]}
+          onChange={(e) => {
+            const val = e.target.value
+            handleChange(field, val === '' ? 0 : parseFloat(val))
+          }}
           disabled={isLoading}
           onFocus={() => setFocusedField(field)}
           onBlur={() => setFocusedField(null)}
@@ -147,7 +141,7 @@ export function BondForm({ onSubmit, isLoading = false }: BondFormProps) {
         </select>
       </div>
 
-      <button type="submit" disabled={isLoading || !isFormValid()} className="submit-button">
+      <button type="submit" disabled={isLoading} className="submit-button">
         {isLoading ? 'Calculating...' : 'Calculate'}
       </button>
     </form>
