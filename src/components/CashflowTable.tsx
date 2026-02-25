@@ -1,12 +1,12 @@
 import type { CashflowRow } from '@/types/bond'
+import { CURRENCY_SYMBOL } from '@/config/api'
 
 interface CashflowTableProps {
   cashflows: CashflowRow[]
-  startDate?: Date
-  frequency?: number
+  faceValue?: number
 }
 
-export function CashflowTable({ cashflows, startDate = new Date(), frequency = 2 }: CashflowTableProps) {
+export function CashflowTable({ cashflows, faceValue = 0 }: CashflowTableProps) {
   if (!cashflows || cashflows.length === 0) {
     return (
       <div className="cashflow-table-container empty">
@@ -18,23 +18,15 @@ export function CashflowTable({ cashflows, startDate = new Date(), frequency = 2
     )
   }
 
-  const calculatePaymentDate = (period: number): Date => {
-    const monthsPerPeriod = 12 / frequency
-    const date = new Date(startDate)
-    date.setMonth(date.getMonth() + (period - 1) * monthsPerPeriod)
-    return date
-  }
-
   const formatCurrency = (value: number): string => {
     return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
-    }).format(value)
+    }).format(value).replace(/^/, CURRENCY_SYMBOL)
   }
 
-  const formatDate = (date: Date): string => {
+  const formatDate = (dateString: string): string => {
+    const date = new Date(dateString)
     return new Intl.DateTimeFormat('en-US', {
       year: 'numeric',
       month: 'short',
@@ -42,16 +34,10 @@ export function CashflowTable({ cashflows, startDate = new Date(), frequency = 2
     }).format(date)
   }
 
-  const formatType = (type: string): string => {
-    return type === 'coupon' ? 'Coupon' : 'Principal'
-  }
-
-  const getTypeClass = (type: string): string => {
-    return type === 'coupon' ? 'type-coupon' : 'type-principal'
-  }
-
-  const totalPresentValue = cashflows.reduce((sum, cf) => sum + cf.presentValue, 0)
-  const totalAmount = cashflows.reduce((sum, cf) => sum + cf.amount, 0)
+  // Calculate totals
+  const totalCouponPayments = cashflows.reduce((sum, cf) => sum + (cf.couponPayment || 0), 0)
+  const lastCumulativeInterest = cashflows.length > 0 ? cashflows[cashflows.length - 1].cumulativeInterest || 0 : 0
+  const totalPayments = totalCouponPayments + faceValue
 
   return (
     <div className="cashflow-table-container">
@@ -60,24 +46,25 @@ export function CashflowTable({ cashflows, startDate = new Date(), frequency = 2
         <table className="cashflow-table">
           <thead>
             <tr>
-              <th>Period</th>
+              <th className="text-center">Period</th>
               <th>Payment Date</th>
-              <th>Type</th>
-              <th>Amount</th>
-              <th>Present Value</th>
+              <th className="text-right">Coupon Payment</th>
+              <th className="text-right">Cumulative Interest</th>
+              <th className="text-right">Remaining Principal</th>
             </tr>
           </thead>
           <tbody>
             {cashflows.map((row, index) => {
-              const paymentDate = calculatePaymentDate(row.period)
+              const isLastRow = index === cashflows.length - 1
+              const couponPayment = row.couponPayment || 0
 
               return (
-                <tr key={index}>
+                <tr key={index} className={isLastRow ? 'row-principal' : ''}>
                   <td className="cell-period">{row.period}</td>
-                  <td className="cell-date">{formatDate(paymentDate)}</td>
-                  <td className={`cell-type ${getTypeClass(row.type)}`}>{formatType(row.type)}</td>
-                  <td className="cell-amount">{formatCurrency(row.amount)}</td>
-                  <td className="cell-pv">{formatCurrency(row.presentValue)}</td>
+                  <td className="cell-date">{formatDate(row.paymentDate)}</td>
+                  <td className="cell-coupon">{couponPayment > 0 ? formatCurrency(couponPayment) : '-'}</td>
+                  <td className="cell-cumulative">{formatCurrency(row.cumulativeInterest)}</td>
+                  <td className="cell-principal">{formatCurrency(row.remainingPrincipal)}</td>
                 </tr>
               )
             })}
@@ -87,10 +74,10 @@ export function CashflowTable({ cashflows, startDate = new Date(), frequency = 2
       <div className="table-footer">
         <span className="total-periods">Total Periods: {cashflows.length}</span>
         <span className="total-amount">
-          Total Amount: {formatCurrency(totalAmount)}
+          Total Interest: {formatCurrency(lastCumulativeInterest)}
         </span>
-        <span className="total-pv">
-          Total Present Value: {formatCurrency(totalPresentValue)}
+        <span className="total-amount">
+          Total Payments: {formatCurrency(totalPayments)}
         </span>
       </div>
     </div>

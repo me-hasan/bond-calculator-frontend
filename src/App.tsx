@@ -5,38 +5,34 @@ import { CashflowTable } from './components/CashflowTable'
 import { ErrorBoundary } from './components/ErrorBoundary'
 import { bondService, ApiError, NetworkError, ValidationError } from './api'
 import type { BondCalculationRequest, BondCalculationResponse } from './types/bond'
-import './components/BondForm.css'
-import './components/ResultCard.css'
-import './components/CashflowTable.css'
-import './components/ErrorBoundary.css'
-import './App.css'
+import './styles/index.css'
 
 function AppContent() {
   const [result, setResult] = useState<BondCalculationResponse | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [lastRequest, setLastRequest] = useState<BondCalculationRequest | null>(null)
 
   const handleFormSubmit = async (data: BondCalculationRequest) => {
     setIsLoading(true)
     setError(null)
     setResult(null)
+    setLastRequest(data)
 
     try {
+      // Single API call that returns both metrics and cashflow schedule
       const response = await bondService.calculateBond(data)
-      setResult(response as BondCalculationResponse)
+      setResult(response)
     } catch (err) {
       if (err instanceof ValidationError) {
         setError(`Validation Error: ${err.message}`)
       } else if (err instanceof ApiError) {
         const errorMsg = `Server Error (${err.statusCode}): ${err.message}`
         setError(errorMsg)
-        // Log additional details for debugging
         if (err.details) {
           console.error('Server error details:', err.details)
         }
-        // Log the full request that was sent
         console.error('Request data:', data)
-        console.error('Request URL:', `${import.meta.env.VITE_API_BASE_URL}/bond/calculate`)
       } else if (err instanceof NetworkError) {
         setError(`Network Error: ${err.message}`)
       } else {
@@ -46,11 +42,6 @@ function AppContent() {
     } finally {
       setIsLoading(false)
     }
-  }
-
-  const handleReset = () => {
-    setResult(null)
-    setError(null)
   }
 
   return (
@@ -65,23 +56,17 @@ function AppContent() {
           <BondForm onSubmit={handleFormSubmit} isLoading={isLoading} />
         </div>
 
-        {(result || error || isLoading) && (
-          <div className="results-section">
-            <ResultCard result={result} isLoading={isLoading} error={error} />
+        <div className="results-wrapper">
+          {(result || error || isLoading) && (
+            <div className="results-section">
+              <ResultCard result={result} isLoading={isLoading} error={error} />
 
-            {result && result.cashflows && result.cashflows.length > 0 && (
-              <CashflowTable cashflows={result.cashflows} />
-            )}
-          </div>
-        )}
-
-        {result && !isLoading && (
-          <div className="actions-section">
-            <button onClick={handleReset} className="reset-button">
-              Calculate Another Bond
-            </button>
-          </div>
-        )}
+              {result && result.cashflows && result.cashflows.length > 0 && (
+                <CashflowTable cashflows={result.cashflows} faceValue={lastRequest?.faceValue} />
+              )}
+            </div>
+          )}
+        </div>
       </main>
 
       <footer className="app-footer">

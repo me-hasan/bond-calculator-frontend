@@ -8,13 +8,12 @@ export interface BondCalculationRequest {
   frequency?: number // Payment frequency per year (default: 2 for semi-annual)
 }
 
-export type CashflowType = 'coupon' | 'principal'
-
 export interface CashflowRow {
   period: number
-  type: CashflowType
-  amount: number
-  presentValue: number
+  paymentDate: string
+  couponPayment: number
+  cumulativeInterest: number
+  remainingPrincipal: number
 }
 
 export interface BondCalculationResponse {

@@ -19,9 +19,9 @@ export class BondService {
   private readonly client = apiClient
 
   /**
-   * Calculate bond metrics including yield to maturity, duration, and present value
+   * Calculate bond metrics including yield to maturity, duration, present value, and cashflow schedule
    * @param request - Bond calculation parameters
-   * @returns Bond calculation results with metrics and cashflows
+   * @returns Bond calculation results with metrics and detailed cashflow schedule
    * @throws {ApiError} - HTTP errors with status code
    * @throws {NetworkError} - Network/fetch errors
    * @throws {ValidationError} - Request validation errors

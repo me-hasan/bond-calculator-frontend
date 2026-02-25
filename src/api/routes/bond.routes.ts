@@ -5,5 +5,4 @@
 
 export const BOND_ROUTES = {
   CALCULATE: '/bond/calculate',
-  CASHFLOW_SCHEDULE: '/bond/cashflow-schedule',
 } as const
