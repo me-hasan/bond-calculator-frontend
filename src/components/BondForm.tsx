@@ -27,7 +27,7 @@ export function BondForm({ onSubmit, isLoading = false }: BondFormProps) {
     frequency: 2,
   })
 
-  const [sliderMode, setSliderMode] = useState<Set<keyof BondCalculationRequest>>(new Set())
+  const [_sliderMode, _setSliderMode] = useState<Set<keyof BondCalculationRequest>>(new Set())
   const [focusedField, setFocusedField] = useState<keyof BondCalculationRequest | null>(null)
   const [errors, setErrors] = useState<Partial<Record<keyof BondCalculationRequest, string>>>({})
 
@@ -70,25 +70,12 @@ export function BondForm({ onSubmit, isLoading = false }: BondFormProps) {
     })
   }
 
-  const toggleSliderMode = (field: keyof BondCalculationRequest) => {
-    setSliderMode((prev) => {
-      const newSet = new Set(prev)
-      if (newSet.has(field)) {
-        newSet.delete(field)
-      } else {
-        newSet.add(field)
-      }
-      return newSet
-    })
-  }
-
   const renderInputWithSlider = (
     field: keyof BondCalculationRequest,
     label: string,
     id: string,
-    config: { min: number; max: number; step: number }
+    _config: { min: number; max: number; step: number }
   ) => {
-    const isSliderMode = sliderMode.has(field)
     const isFocused = focusedField === field
 
     return (

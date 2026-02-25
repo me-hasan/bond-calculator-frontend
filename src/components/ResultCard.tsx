@@ -15,11 +15,11 @@ const STATUS_COLORS = {
 } as const
 
 // Number counter animation hook
-function useCounter(end: number, duration: number = 1000, start: number = 0) {
+function useCounter(end: number, duration = 1000, start = 0) {
   const [count, setCount] = useState(start)
   const [isVisible, setIsVisible] = useState(false)
-  const frameRef = useRef<number>()
-  const startTimeRef = useRef<number>()
+  const frameRef = useRef<number | undefined>(undefined)
+  const startTimeRef = useRef<number | undefined>(undefined)
 
   useEffect(() => {
     if (!isVisible) return
@@ -54,7 +54,7 @@ function useCounter(end: number, duration: number = 1000, start: number = 0) {
   return { count, setIsVisible }
 }
 
-function AnimatedValue({ value, decimals = 2, suffix = '', prefix = '' }: { value: number, decimals?: number, suffix?: string, prefix?: string }) {
+function AnimatedValue({ value, decimals = 2, suffix = '', prefix = '' }: { value: number; decimals?: number; suffix?: string; prefix?: string }) {
   const { count, setIsVisible } = useCounter(value, 1200)
 
   useEffect(() => {

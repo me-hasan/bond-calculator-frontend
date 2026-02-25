@@ -12,8 +12,4 @@ export { BOND_ROUTES } from './routes/bond.routes'
 
 // Services
 export { bondService } from './services/bond.service'
-export type {
-  BondCalculationApiResponse,
-  CashflowScheduleRequest,
-  CashflowScheduleResponse,
-} from './services/bond.service'
+export type { BondCalculationApiResponse } from './services/bond.service'
