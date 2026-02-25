@@ -6,14 +6,16 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
+    "start": "node server-prod.js",
     "lint": "eslint .",
     "preview": "vite preview",
     "test": "vitest",
     "test:ui": "vitest --ui",
     "test:coverage": "vitest --coverage",
-    "heroku-postbuild": "npm run build && mkdir -p www && cp -r dist/* www/"
+    "heroku-postbuild": "npm run build"
   },
   "dependencies": {
+    "express": "^4.18.2",
     "react": "^19.2.0",
     "react-dom": "^19.2.0"
   },
