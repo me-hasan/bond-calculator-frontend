@@ -11,7 +11,7 @@
     "test": "vitest",
     "test:ui": "vitest --ui",
     "test:coverage": "vitest --coverage",
-    "heroku-postbuild": "npm run build"
+    "heroku-postbuild": "npm run build && mkdir -p www && cp -r dist/* www/"
   },
   "dependencies": {
     "react": "^19.2.0",
