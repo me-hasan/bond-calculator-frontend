@@ -1,73 +1,132 @@
-# React + TypeScript + Vite
+# Bond Calculator Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Overview
 
-Currently, two official plugins are available:
+This is a frontend application for calculating bond metrics, yield to maturity, and cashflow schedules. It was built as an interview assignment to demonstrate proficiency in React, TypeScript, and modern web development practices.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Features
 
-## React Compiler
+- **Bond Metrics Calculation**: Calculate key bond metrics including:
+  - Current Yield
+  - Yield to Maturity (YTM)
+  - Bond Status (Premium, Discount, or Par)
+  - Total Interest
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- **Cashflow Schedule**: Generate detailed payment schedules showing:
+  - Payment periods and dates
+  - Coupon payments per period
+  - Cumulative interest
+  - Remaining principal
 
-## Expanding the ESLint configuration
+- **User Interface**:
+  - Clean, responsive form for inputting bond parameters
+  - Real-time validation and error handling
+  - Loading states for async operations
+  - Comprehensive error display with detailed messages
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## Tech Stack
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+- **React 19** - UI library
+- **TypeScript** - Type-safe development
+- **Vite** - Build tool and dev server
+- **Vitest** - Unit testing framework
+- **Testing Library** - React component testing utilities
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+## Project Structure
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```
+src/
+├── api/
+│   ├── client.ts          # HTTP client configuration
+│   ├── index.ts           # API exports
+│   ├── routes/
+│   │   └── bond.routes.ts # API endpoint definitions
+│   └── services/
+│       └── bond.service.ts# Bond calculation API calls
+├── components/
+│   ├── BondForm.tsx       # Input form for bond parameters
+│   ├── CashflowTable.tsx  # Displays payment schedule
+│   ├── ErrorBoundary.tsx  # Error handling wrapper
+│   ├── ResultCard.tsx     # Displays calculation results
+│   └── *.test.tsx         # Component unit tests
+├── config/
+│   └── api.ts             # API configuration
+├── styles/                # CSS stylesheets
+├── test/
+│   └── setup.ts           # Test configuration
+├── types/
+│   └── bond.ts            # TypeScript interfaces
+├── App.tsx                # Main application component
+└── main.tsx               # Application entry point
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## Installation
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+1. Install dependencies:
+```bash
+npm install
 ```
+
+2. Create a `.env` file in the root directory (see `.env.example` for reference):
+```env
+VITE_API_BASE_URL=http://localhost:3000/api
+```
+
+## Running the Application
+
+- **Development mode**: `npm run dev`
+- **Build for production**: `npm run build`
+- **Preview production build**: `npm run preview`
+
+## Testing
+
+- **Run tests**: `npm test`
+- **Run tests with UI**: `npm run test:ui`
+- **Run tests with coverage**: `npm run test:coverage`
+
+## API Integration
+
+This frontend expects a backend API that provides a bond calculation endpoint. The API should accept:
+
+```typescript
+{
+  faceValue: number
+  couponRate: number
+  marketPrice: number
+  yearsToMaturity: number
+  frequency?: number // Optional, defaults to 2 (semi-annual)
+}
+```
+
+And return:
+```typescript
+{
+  status: 'Premium' | 'Discount' | 'Par'
+  currentYield: number
+  yieldToMaturity: number
+  totalInterest: number
+  cashflows: Array<{
+    period: number
+    paymentDate: string
+    couponPayment: number
+    cumulativeInterest: number
+    remainingPrincipal: number
+  }>
+}
+```
+
+## Error Handling
+
+The application includes comprehensive error handling for:
+- Validation errors (invalid input)
+- API errors (server-side issues)
+- Network errors (connectivity problems)
+
+All errors are displayed to the user with clear, actionable messages.
+
+## Built With
+
+- [React](https://react.dev/)
+- [TypeScript](https://www.typescriptlang.org/)
+- [Vite](https://vite.dev/)
+- [Vitest](https://vitest.dev/)
