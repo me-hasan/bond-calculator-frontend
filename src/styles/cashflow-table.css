@@ -1,0 +1,204 @@
+.cashflow-table-container {
+  width: 100%;
+  margin: 0;
+  background: var(--color-background);
+  border-radius: 10px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  animation: slideUp 0.5s ease-out 0.4s both;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.cashflow-table-container.empty {
+  padding: 1rem;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 1rem;
+  color: var(--color-text-muted);
+}
+
+.empty-state p {
+  margin: 0.35rem 0;
+}
+
+.empty-hint {
+  font-size: 0.75rem;
+  font-style: italic;
+}
+
+.table-title {
+  margin: 0;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--color-text);
+  border-bottom: 1px solid var(--color-border);
+  background: linear-gradient(135deg, var(--color-header-bg) 0%, #ffffff 100%);
+}
+
+.table-wrapper {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: auto;
+}
+
+.table-wrapper::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.table-wrapper::-webkit-scrollbar-track {
+  background: var(--color-border);
+}
+
+.table-wrapper::-webkit-scrollbar-thumb {
+  background: var(--color-primary);
+  border-radius: 3px;
+}
+
+.table-wrapper::-webkit-scrollbar-thumb:hover {
+  background: var(--color-primary-hover);
+}
+
+.cashflow-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.75rem;
+}
+
+.cashflow-table thead {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.cashflow-table thead th {
+  background: var(--color-header-bg);
+  color: var(--color-text);
+  font-weight: 600;
+  text-align: left;
+  padding: 0.4rem 0.6rem;
+  border-bottom: 2px solid var(--color-border);
+  white-space: nowrap;
+}
+
+.cashflow-table thead th.text-center {
+  text-align: center;
+}
+
+.cashflow-table thead th.text-right {
+  text-align: right;
+}
+
+.cashflow-table tbody tr {
+  border-bottom: 1px solid var(--color-border);
+  transition: all 0.2s ease;
+  animation: fadeIn 0.3s ease-out both;
+}
+
+.cashflow-table tbody tr:nth-child(odd) {
+  animation-delay: 0.05s;
+}
+
+.cashflow-table tbody tr:nth-child(even) {
+  animation-delay: 0.1s;
+}
+
+.cashflow-table tbody tr:hover {
+  background: var(--color-row-hover);
+  transform: scale(1.01);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.cashflow-table tbody tr:last-child {
+  border-bottom: none;
+}
+
+.cashflow-table td {
+  padding: 0.4rem 0.6rem;
+  color: var(--color-text);
+}
+
+.cell-period {
+  font-weight: 500;
+  text-align: center;
+  width: 60px;
+}
+
+.cell-date {
+  white-space: nowrap;
+  width: 100px;
+}
+
+.cell-coupon {
+  text-align: right;
+  font-family: 'Courier New', monospace;
+  font-weight: 500;
+  color: var(--color-success);
+}
+
+.cell-cumulative {
+  text-align: right;
+  font-family: 'Courier New', monospace;
+  font-weight: 500;
+  color: var(--color-primary);
+}
+
+.cell-principal {
+  text-align: right;
+  font-family: 'Courier New', monospace;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.row-principal {
+  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+  font-weight: 600;
+}
+
+.row-principal td {
+  border-top: 2px solid var(--color-warning);
+}
+
+.table-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0.75rem;
+  background: linear-gradient(135deg, var(--color-footer-bg) 0%, #ffffff 100%);
+  border-top: 1px solid var(--color-border);
+  font-size: 0.7rem;
+  font-weight: 500;
+  color: var(--color-text);
+  flex-shrink: 0;
+}
+
+.table-footer .total-periods {
+  font-size: 0.65rem;
+}
+
+.table-footer span {
+  font-weight: 700;
+}
+
+@media (max-width: 640px) {
+  .table-footer {
+    flex-direction: column;
+    gap: 0.35rem;
+    align-items: flex-start;
+  }
+
+  .cashflow-table {
+    font-size: 0.65rem;
+  }
+
+  .cashflow-table thead th,
+  .cashflow-table td {
+    padding: 0.35rem 0.5rem;
+  }
+}
